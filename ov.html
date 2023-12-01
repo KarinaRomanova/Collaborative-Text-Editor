@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Collaborative Text Editor</title>
+</head>
+<body>
+    <textarea id="editor" style="width: 100%; height: 400px;"></textarea>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const ws = new WebSocket('ws://localhost:8000/ws');
+
+        ws.onopen = () => {
+            console.log('Соединение установлено');
+        };
+
+        ws.onmessage = (event) => {
+            const text = event.data;
+            editor.value = text;
+        };
+
+        editor.addEventListener('input', () => {
+            const text = editor.value;
+            ws.send(text);
+        });
+
+        ws.onclose = () => {
+            console.log('Соединение закрыто');
+        };
+
+        ws.onerror = (error) => {
+            console.error('Ошибка веб-сокета:', error);
+        };
+    </script>
+</body>
+</html>
